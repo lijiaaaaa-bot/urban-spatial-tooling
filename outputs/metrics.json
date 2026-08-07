@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "document": "metrics.json",
+    "version": "1.0.0",
+    "project": "haidian-ai-belt-provisional",
+    "generated_by": "urban-spatial-tooling/notebooks/06-metrics-computation.ipynb",
+    "crs": "EPSG:4548",
+    "data_source": "simulated (provisional boundary from haidian project)",
+    "note": "All metrics are computed from simulated data and are NOT authoritative."
+  },
+  "site": {
+    "area_sqm": 11412825.39,
+    "area_ha": 1141.2825,
+    "area_km2": 11.412825,
+    "declared_area_sqm": 11400000,
+    "deviation_pct": 0.1125
+  },
+  "land_use": {
+    "total_parcels": 278,
+    "area_by_code": {
+      "A": {
+        "area_sqm": 975367.99,
+        "area_ha": 97.5368,
+        "pct": 8.55,
+        "label_zh": "A 公共管理与公共服务用地"
+      },
+      "B": {
+        "area_sqm": 1259336.92,
+        "area_ha": 125.9337,
+        "pct": 11.03,
+        "label_zh": "B 商业服务业设施用地"
+      },
+      "E": {
+        "area_sqm": 1207422.54,
+        "area_ha": 120.7423,
+        "pct": 10.58,
+        "label_zh": "E 其他建设用地"
+      },
+      "G": {
+        "area_sqm": 2061654.71,
+        "area_ha": 206.1655,
+        "pct": 18.06,
+        "label_zh": "G 绿地与广场用地"
+      },
+      "R": {
+        "area_sqm": 4345772.28,
+        "area_ha": 434.5772,
+        "pct": 38.08,
+        "label_zh": "R 居住用地"
+      },
+      "S": {
+        "area_sqm": 1563270.94,
+        "area_ha": 156.3271,
+        "pct": 13.7,
+        "label_zh": "S 道路与交通设施用地"
+      }
+    }
+  },
+  "metrics": {
+    "far": {
+      "value": 2.0702,
+      "unit": "dimensionless",
+      "formula": "total_gfa / total_site_area",
+      "total_gfa_sqm": 23626354.89,
+      "trace": "land_use_area * coverage_ratio * avg_floors, summed across all land_use_codes"
+    },
+    "building_density": {
+      "value_pct": 21.81,
+      "unit": "%",
+      "formula": "total_building_footprint / total_site_area * 100",
+      "total_footprint_sqm": 2489235.94,
+      "trace": "sum(land_use_area * coverage_ratio) for each land_use_code"
+    },
+    "green_ratio": {
+      "value_pct": 18.06,
+      "unit": "%",
+      "formula": "green_area / total_site_area * 100",
+      "green_area_sqm": 2061654.71,
+      "trace": "area_sqm of land_use_code='G'"
+    },
+    "road_density": {
+      "value_km_per_km2": 12.65,
+      "unit": "km/km²",
+      "formula": "total_road_length_km / total_site_area_km2",
+      "total_road_length_m": 144378.67,
+      "trace": "total length of all grid road LineStrings clipped to boundary"
+    }
+  },
+  "topology_checks": {
+    "coverage": {
+      "passed": true,
+      "method": "unary_union.covers(boundary)"
+    },
+    "overlaps": {
+      "passed": false,
+      "method": "pairwise .intersection() for all parcel pairs"
+    },
+    "containment": {
+      "passed": false,
+      "method": ".within(boundary) for all features"
+    }
+  }
+}

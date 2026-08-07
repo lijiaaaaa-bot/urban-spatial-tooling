@@ -165,3 +165,63 @@ jupyter
 - 使用 haidian 的 `brief/site-package/geometry/` 数据作为测试 fixture
 - 成熟后，将 `src/` 模块作为 haidian 项目的依赖或参考实现
 - 填补 haidian 的 TECH-006 (GeoJSON 生成)、TECH-007 (指标计算)、TECH-008 (图纸生成) 缺口
+
+## 学习路径进度
+
+### [x] 1. 投影计算 — `notebooks/01-projection-and-area.ipynb`
+- 读取 haidian provisional_boundaries.geojson
+- EPSG:4326 -> EPSG:4548 投影变换
+- 面积计算对比官方声明值 (11.4 km²)
+- 偏差验证通过
+
+### [x] 2. 拓扑检查 — `notebooks/05-topology-checks.ipynb`
+- 覆盖检查 (coverage): `unary_union().covers(boundary)`
+- 重叠检查 (overlaps): 逐对 intersection 检测
+- 包含检查 (containment): `.within(boundary)`
+- 用有意破损数据验证检测能力
+
+### [x] 3. 空间生成 — `notebooks/02/03/04`
+- **用地布局** (`02-land-use-generation.ipynb`): 网格细分 + 随机用地分配，无间隙无重叠
+- **建筑基底** (`03-building-generation.ipynb`): 网格布点 + 裁剪到 parcel，按用地类型分配建筑类型
+- **道路网络** (`04-road-network.ipynb`): 三级网格道路（次干道/支路/慢行道）
+
+### [x] 4. 指标计算 — `notebooks/06-metrics-computation.ipynb`
+- FAR (容积率): 2.07
+- 建筑密度: 21.81%
+- 绿地率: 18.06%
+- 道路网密度: 12.65 km/km²
+- 输出 `outputs/metrics.json` — 每个指标可追溯到源几何数据
+
+### [x] 5. 专业图纸 — `notebooks/07-professional-figures.ipynb`
+- 用地规划图 (300dpi PNG)
+- 用地+道路叠加图
+- 指标证据链图 (4-panel dashboard)
+- 标题/图例/比例尺/指北针/来源标注/水印
+
+### [x] 6. 集成封装 — `src/` 模块
+- `src/projection.py` — 投影变换、面积计算
+- `src/topology.py` — 覆盖/重叠/包含检查
+- `src/generation.py` — 用地分区、建筑生成
+- `src/visualization.py` — 专业图纸渲染
+
+### 产出物清单
+
+```
+data/haidian-boundary.geojson          — 测试边界数据
+notebooks/01-projection-and-area.ipynb — 投影与面积
+notebooks/02-land-use-generation.ipynb — 用地生成
+notebooks/03-building-generation.ipynb — 建筑生成
+notebooks/04-road-network.ipynb        — 道路网络
+notebooks/05-topology-checks.ipynb     — 拓扑验证
+notebooks/06-metrics-computation.ipynb — 指标计算
+notebooks/07-professional-figures.ipynb— 图纸渲染
+src/projection.py, topology.py, generation.py, visualization.py — 可复用模块
+outputs/*.png, metrics.json            — 生成的图纸和指标
+```
+
+### 下一步
+
+- 成熟方法迁移到 haidian 项目作为正式依赖
+- 实现基于道路网络引导的更真实用地分区 (Voronoi-based)
+- 添加 contextily 底图支持（需要解决 gdal 依赖问题）
+- 日照间距和退线约束的建筑生成
