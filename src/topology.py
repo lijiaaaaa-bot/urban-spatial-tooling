@@ -10,18 +10,39 @@ All checks use shapely spatial predicates and return structured results
 suitable for both programmatic use and human-readable reporting.
 """
 
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import geopandas as gpd
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
+# Area tolerance (m²) below which gaps / outside-poking are treated as
+# floating-point noise rather than as real topological violations.
+#
+# GEOS predicates such as `.covers()` and `.within()` compare coordinates
+# exactly, so two geometries that agree to the last bit still fail the
+# predicate even when the true (area-based) difference is zero.  Planners
+# care about *material* gaps/overlaps/poking, so coverage and containment
+# are judged on measured area difference with this tolerance.  A genuine
+# violation (a missing parcel, a displaced polygon) is orders of magnitude
+# larger than 1e-4 m² (0.01 cm²) on a km²-scale site.
+AREA_TOLERANCE_SQM = 1e-4
+
 
 def check_coverage(
-    parcels: gpd.GeoDataFrame, boundary: Polygon
+    parcels: gpd.GeoDataFrame,
+    boundary: Polygon,
+    tol: float = AREA_TOLERANCE_SQM,
 ) -> Tuple[bool, List[Polygon]]:
     """
     Check whether *parcels* fully cover *boundary*.
+
+    Coverage is judged by the measured area of the uncovered region
+    ``boundary - union(parcels)``: a gap smaller than *tol* m² (i.e.
+    floating-point noise) is not considered a violation.  This is
+    deliberately more robust than the coordinate-exact ``union.covers()``
+    predicate, which fails on last-bit rounding even for a perfect
+    partition.
 
     Parameters
     ----------
@@ -29,21 +50,22 @@ def check_coverage(
         Polygons representing land parcels / zones.
     boundary : Polygon
         The reference boundary polygon.
+    tol : float, optional
+        Maximum acceptable uncovered area in m² (default 1e-4).
 
     Returns
     -------
     (covered, gaps)
         covered : bool
-            True if parcels fully cover the boundary.
+            True if parcels fully cover the boundary (within *tol*).
         gaps : list of Polygon
             Polygons representing uncovered areas within the boundary.
     """
     union = unary_union(parcels.geometry.values)
-    if union.covers(boundary):
-        return True, []
-
     gaps_polygon = boundary.difference(union)
     if gaps_polygon.is_empty:
+        return True, []
+    if gaps_polygon.area <= tol:
         return True, []
 
     # Normalise to list of Polygons
@@ -96,10 +118,19 @@ def check_overlaps(
 
 
 def check_containment(
-    features: gpd.GeoDataFrame, boundary: Polygon
+    features: gpd.GeoDataFrame,
+    boundary: Polygon,
+    tol: float = AREA_TOLERANCE_SQM,
 ) -> Tuple[bool, gpd.GeoDataFrame]:
     """
     Check whether all features are fully contained within *boundary*.
+
+    Containment is judged by the measured area ``feature - boundary``
+    (i.e. how much of the feature pokes outside the boundary).  A feature
+    whose outside area is below *tol* m² (floating-point noise) is not a
+    violator.  This is deliberately more robust than the coordinate-exact
+    ``.within()`` predicate, which fails on last-bit rounding for
+    boundary-sharing features of an otherwise perfect partition.
 
     Parameters
     ----------
@@ -107,15 +138,20 @@ def check_containment(
         Features to check.
     boundary : Polygon
         The containing boundary.
+    tol : float, optional
+        Maximum acceptable outside area per feature in m² (default 1e-4).
 
     Returns
     -------
     (all_inside, violators)
         all_inside : bool
-            True if every feature is within the boundary.
+            True if every feature is inside the boundary (within *tol*).
         violators : GeoDataFrame
-            Subset of *features* that fall (even partially) outside the boundary.
+            Subset of *features* that fall materially (>= *tol* m²) outside
+            the boundary.
     """
-    mask = features.geometry.within(boundary)
+    mask = features.geometry.apply(
+        lambda g: g.difference(boundary).area <= tol
+    )
     violators = features[~mask].copy()
     return len(violators) == 0, violators

@@ -1,0 +1,147 @@
+{
+  "gate_passed": false,
+  "total_checks": 5,
+  "passed": 2,
+  "failed": 2,
+  "not_assessed": 1,
+  "blocking_failures": 2,
+  "not_assessed_checks": [
+    {
+      "check_id": "CHECK-VIEW-001",
+      "name": "View Corridor Compliance",
+      "passed": false,
+      "severity": "not_assessed",
+      "category": "B",
+      "detail": "View corridors not defined — NOT ASSESSED (official GIS unavailable)",
+      "evidence": {
+        "corridors_available": false
+      },
+      "error": null
+    }
+  ],
+  "results": [
+    {
+      "check_id": "CHECK-SOLAR-001",
+      "name": "Solar Access (Spacing Coefficient)",
+      "passed": true,
+      "severity": "info",
+      "category": "A",
+      "detail": "All residential buildings pass",
+      "evidence": {
+        "total_residential": 3,
+        "violations": 0,
+        "missing_spacing_data": 0,
+        "violation_details": []
+      },
+      "error": null
+    },
+    {
+      "check_id": "CHECK-VIEW-001",
+      "name": "View Corridor Compliance",
+      "passed": false,
+      "severity": "not_assessed",
+      "category": "B",
+      "detail": "View corridors not defined — NOT ASSESSED (official GIS unavailable)",
+      "evidence": {
+        "corridors_available": false
+      },
+      "error": null
+    },
+    {
+      "check_id": "CHECK-SPONGE-001",
+      "name": "Sponge City Volume Compliance",
+      "passed": false,
+      "severity": "major",
+      "category": "A",
+      "detail": "V_req=194299m3, LID=152747m3 (FAIL)",
+      "evidence": {
+        "V_required_m3": 194299.3,
+        "lid_storage_m3": 152747.5,
+        "phi_weighted": 0.507,
+        "green_area_sqm": 2182106.8,
+        "design_rainfall_mm": 33.6
+      },
+      "error": null
+    },
+    {
+      "check_id": "CHECK-SETBACK-001",
+      "name": "Building Setback Compliance",
+      "passed": false,
+      "severity": "critical",
+      "category": "C",
+      "detail": "6 building(s) violate setback requirements",
+      "evidence": {
+        "violations": 6,
+        "details": [
+          {
+            "building_id": "BLDG-001",
+            "min_setback": 0.0,
+            "required": 15,
+            "road_class": "arterial"
+          },
+          {
+            "building_id": "BLDG-004",
+            "min_setback": 0.0,
+            "required": 15,
+            "road_class": "arterial"
+          },
+          {
+            "building_id": "BLDG-007",
+            "min_setback": 0.0,
+            "required": 15,
+            "road_class": "arterial"
+          },
+          {
+            "building_id": "BLDG-009",
+            "min_setback": 0.0,
+            "required": 15,
+            "road_class": "arterial"
+          },
+          {
+            "building_id": "BLDG-010",
+            "min_setback": 0.0,
+            "required": 15,
+            "road_class": "arterial"
+          },
+          {
+            "building_id": "BLDG-011",
+            "min_setback": 0.0,
+            "required": 15,
+            "road_class": "arterial"
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "check_id": "CHECK-LIVING-001",
+      "name": "15-Minute Living Circle",
+      "passed": true,
+      "severity": "info",
+      "category": "A",
+      "detail": "No residential population to check",
+      "evidence": {
+        "residential_pop": 0
+      },
+      "error": null
+    }
+  ],
+  "meta": {
+    "tool": "urban-spatial-tooling",
+    "module": "src/integration.py",
+    "submission_path": "/Users/lijia/Projects/haidian/submissions/test/test",
+    "generated_at": "2026-08-09T09:24:54+00:00",
+    "layer_counts": {
+      "buildings": 12,
+      "land_use": 25,
+      "site_boundary": 1,
+      "roads": 13,
+      "constraints": 3,
+      "green_space": 4,
+      "key_areas": 3,
+      "phasing": 10,
+      "public_space": 8
+    },
+    "gate_semantics": "only CRITICAL/MAJOR failures block the gate; NOT_ASSESSED checks never block but are reported"
+  }
+}

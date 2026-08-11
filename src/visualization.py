@@ -13,7 +13,10 @@ import geopandas as gpd
 from matplotlib_scalebar.scalebar import ScaleBar
 from shapely.geometry import Polygon
 
-from .generation import LAND_USE_COLORS, LAND_USE_LABELS  # noqa: F401
+try:
+    from .generation import LAND_USE_COLORS, LAND_USE_LABELS  # noqa: F401
+except ImportError:
+    from generation import LAND_USE_COLORS, LAND_USE_LABELS  # noqa: F401
 
 
 def _setup_chinese_font():

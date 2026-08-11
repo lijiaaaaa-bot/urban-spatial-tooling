@@ -7,8 +7,6 @@ Provides:
 - Area breakdown by group
 """
 
-from typing import Optional
-
 import geopandas as gpd
 import numpy as np
 import pyproj

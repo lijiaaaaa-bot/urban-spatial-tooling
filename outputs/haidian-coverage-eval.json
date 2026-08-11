@@ -1,0 +1,292 @@
+{
+  "evaluation_date": "2026-08-09",
+  "framework": "haidian goal-driven",
+  "total_criteria": 35,
+  "covered": 21,
+  "partial": 8,
+  "gap": 6,
+  "coverage_pct": 60,
+  "verdict": "CONTINUE",
+  "criteria": [
+    {
+      "id": "C-GEN-001",
+      "category": "生成",
+      "description": "用地布局生成：在边界内生成无间隙无重叠的用地分区",
+      "verdict": "covered",
+      "evidence": "src/generation.py subdivide_boundary (planar noding); nb02 验证通过; outputs/metrics.json overlaps=true coverage=true",
+      "action": ""
+    },
+    {
+      "id": "C-GEN-002",
+      "category": "生成",
+      "description": "建筑基底生成：在用地分区内生成 building footprint",
+      "verdict": "covered",
+      "evidence": "src/generation.py generate_building_footprints; nb03 验证; outputs/14-footprints.geojson",
+      "action": ""
+    },
+    {
+      "id": "C-GEN-003",
+      "category": "生成",
+      "description": "道路网络生成：三级道路（主干/次干/支路+慢行）",
+      "verdict": "covered",
+      "evidence": "nb04; outputs/road_network_preview.png",
+      "action": ""
+    },
+    {
+      "id": "C-GEN-004",
+      "category": "生成",
+      "description": "绿地与公共空间生成",
+      "verdict": "covered",
+      "evidence": "src/generation.py assign_land_use 包含 G(绿地)和 S(广场); nb02",
+      "action": ""
+    },
+    {
+      "id": "C-GEN-005",
+      "category": "生成",
+      "description": "基于道路网络引导的 Voronoi 用地分区",
+      "verdict": "gap",
+      "evidence": "CLAUDE.md 明确标注为'下一步'，当前为网格细分法",
+      "action": "future: 实现 Voronoi-based 分区"
+    },
+    {
+      "id": "C-ANA-001",
+      "category": "分析",
+      "description": "坐标转换: EPSG:4326 ↔ EPSG:4548",
+      "verdict": "covered",
+      "evidence": "src/projection.py; nb01 验证偏差<1%",
+      "action": ""
+    },
+    {
+      "id": "C-ANA-002",
+      "category": "分析",
+      "description": "拓扑检查: 覆盖/重叠/包含",
+      "verdict": "covered",
+      "evidence": "src/topology.py; nb05; 40 tests 覆盖 gap/overlap/outside 检测",
+      "action": ""
+    },
+    {
+      "id": "C-ANA-003",
+      "category": "分析",
+      "description": "面积计算: EPSG:4548 精确面积",
+      "verdict": "covered",
+      "evidence": "src/projection.py compute_area_4548; nb01",
+      "action": ""
+    },
+    {
+      "id": "C-ANA-004",
+      "category": "分析",
+      "description": "指标计算: FAR/建筑密度/绿地率/道路网密度",
+      "verdict": "covered",
+      "evidence": "nb06; outputs/metrics.json: FAR 2.19, 密度 22.47%, 绿地 15.02%, 路网 12.65 km/km²",
+      "action": ""
+    },
+    {
+      "id": "C-ANA-005",
+      "category": "分析",
+      "description": "指标可复算性: 从 GeoJSON → 计算结果可追溯",
+      "verdict": "covered",
+      "evidence": "outputs/metrics.json 包含 formula/trace 字段",
+      "action": ""
+    },
+    {
+      "id": "C-FIG-001",
+      "category": "图纸",
+      "description": "总体概念图 (site-overview.png)",
+      "verdict": "partial",
+      "evidence": "nb07 生成了类似内容但可能非精确文件名",
+      "action": "确保 haidian 要求的 5 张图纸命名和内容对齐"
+    },
+    {
+      "id": "C-FIG-002",
+      "category": "图纸",
+      "description": "空间结构图 (land-use-structure.png)",
+      "verdict": "partial",
+      "evidence": "nb07 生成了类似内容但可能非精确文件名",
+      "action": "确保 haidian 要求的 5 张图纸命名和内容对齐"
+    },
+    {
+      "id": "C-FIG-003",
+      "category": "图纸",
+      "description": "重点区索引图 (key-areas.png)",
+      "verdict": "partial",
+      "evidence": "nb07 生成了类似内容但可能非精确文件名",
+      "action": "确保 haidian 要求的 5 张图纸命名和内容对齐"
+    },
+    {
+      "id": "C-FIG-004",
+      "category": "图纸",
+      "description": "交通蓝绿系统图 (mobility-bluegreen.png)",
+      "verdict": "partial",
+      "evidence": "nb07 生成了类似内容但可能非精确文件名",
+      "action": "确保 haidian 要求的 5 张图纸命名和内容对齐"
+    },
+    {
+      "id": "C-FIG-005",
+      "category": "图纸",
+      "description": "指标证据链图 (metrics-evidence.png)",
+      "verdict": "partial",
+      "evidence": "nb07 生成了类似内容但可能非精确文件名",
+      "action": "确保 haidian 要求的 5 张图纸命名和内容对齐"
+    },
+    {
+      "id": "C-FIG-006",
+      "category": "图纸",
+      "description": "专业图纸要素: 标题+图例+比例尺+指北针+来源标注",
+      "verdict": "covered",
+      "evidence": "nb07 实现的图纸包含这些要素",
+      "action": ""
+    },
+    {
+      "id": "C-FIG-007",
+      "category": "图纸",
+      "description": "300dpi PNG 输出",
+      "verdict": "covered",
+      "evidence": "nb07 outputs 300dpi",
+      "action": ""
+    },
+    {
+      "id": "C-EVAL-001",
+      "category": "专业评审缺口",
+      "description": "三区三线合规（生态红线/基本农田/城镇开发边界）",
+      "verdict": "covered",
+      "evidence": "nb15; src/compliance.py ThreeLinesChecker; 算法就绪，缺官方GIS数据（B类数据门控）",
+      "action": ""
+    },
+    {
+      "id": "C-EVAL-002",
+      "category": "专业评审缺口",
+      "description": "控规结构类型（地块编码/图则/指标分类）",
+      "verdict": "gap",
+      "evidence": "未实现。gen2.py 无控规图则概念",
+      "action": "需新增 src/regulatory.py: PlotCode, ControlIndicator, PlanningDiagram"
+    },
+    {
+      "id": "C-EVAL-003",
+      "category": "专业评审缺口",
+      "description": "日照分析",
+      "verdict": "covered",
+      "evidence": "nb10; src/solar.py; 大寒日+冬至日双轨; GB 50180-2018 标准对齐",
+      "action": ""
+    },
+    {
+      "id": "C-EVAL-004",
+      "category": "专业评审缺口",
+      "description": "通风分析",
+      "verdict": "gap",
+      "evidence": "未实现。北京强制要求。",
+      "action": "future: nb17-ventilation-analysis.ipynb"
+    },
+    {
+      "id": "C-EVAL-005",
+      "category": "专业评审缺口",
+      "description": "海绵城市容积法",
+      "verdict": "covered",
+      "evidence": "nb12; src/sponge.py; DB11/685-2021 α≥85%; H=33.6mm; V=202,473m³",
+      "action": ""
+    },
+    {
+      "id": "C-EVAL-006",
+      "category": "专业评审缺口",
+      "description": "景观视廊分析",
+      "verdict": "covered",
+      "evidence": "nb11; src/compliance.py ViewCorridor; 算法就绪，缺官方视廊GIS（B类数据门控）",
+      "action": ""
+    },
+    {
+      "id": "C-EVAL-007",
+      "category": "专业评审缺口",
+      "description": "交通承载力",
+      "verdict": "gap",
+      "evidence": "未实现。",
+      "action": "future: nb18-traffic-capacity.ipynb"
+    },
+    {
+      "id": "C-EVAL-008",
+      "category": "专业评审缺口",
+      "description": "15分钟生活圈",
+      "verdict": "covered",
+      "evidence": "nb13; src/living_circle.py; 欧氏buffer+路网等时线+可达性评分",
+      "action": ""
+    },
+    {
+      "id": "C-EVAL-009",
+      "category": "专业评审缺口",
+      "description": "建筑退线",
+      "verdict": "covered",
+      "evidence": "nb14; src/setback.py; DB11/T 996-2013, GB 50016-2014",
+      "action": ""
+    },
+    {
+      "id": "C-EVAL-010",
+      "category": "专业评审缺口",
+      "description": "城市更新分类（留-改-拆）",
+      "verdict": "gap",
+      "evidence": "未实现。",
+      "action": "future: nb19-urban-renewal.ipynb"
+    },
+    {
+      "id": "C-EVAL-011",
+      "category": "专业评审缺口",
+      "description": "竖向设计（地形坡度坡向）",
+      "verdict": "gap",
+      "evidence": "未实现。需要 DEM 数据。",
+      "action": "future: 依赖 DEM 数据获取"
+    },
+    {
+      "id": "C-INT-001",
+      "category": "集成",
+      "description": "TechnicalAnalysis 阶段对接 procedure.py",
+      "verdict": "partial",
+      "evidence": "nb16 设计了 TechnicalReviewRunner + AND-gate + NOT_ASSESSED。但未实际写入 haidian constraints/procedure.py PHASE_DEFINITIONS",
+      "action": "将 TechnicalAnalysis 写入 haidian/constraints/procedure.py"
+    },
+    {
+      "id": "C-INT-002",
+      "category": "集成",
+      "description": "GeoJSON 图层产出对齐 haidian 的 9 个 required geometry layers",
+      "verdict": "partial",
+      "evidence": "generation.py 生成 land_use/buildings/roads/green_space/public_space(5/9)。缺: site_boundary, key_areas, constraints, phasing",
+      "action": "补齐 4 个缺失图层"
+    },
+    {
+      "id": "C-INT-003",
+      "category": "集成",
+      "description": "check 函数签名与 haidian ConstraintEngine 兼容",
+      "verdict": "partial",
+      "evidence": "pipeline.py CheckResult 与 haidian ConstraintResult 结构不同。需 adapter 层。",
+      "action": ""
+    },
+    {
+      "id": "C-ENG-001",
+      "category": "工程质量",
+      "description": "测试覆盖",
+      "verdict": "covered",
+      "evidence": "40 tests, 0.32s: test_projection/topology/solar/compliance/pipeline",
+      "action": ""
+    },
+    {
+      "id": "C-ENG-002",
+      "category": "工程质量",
+      "description": "src/ 模块提取",
+      "verdict": "covered",
+      "evidence": "10 个生产模块 + 2 个归档实验模块",
+      "action": ""
+    },
+    {
+      "id": "C-ENG-003",
+      "category": "工程质量",
+      "description": "GPU 实验结论收敛",
+      "verdict": "covered",
+      "evidence": "GPU 模块归档至 experimental/; CLAUDE.md 记录结论; memory 记录 CPU 胜出",
+      "action": ""
+    },
+    {
+      "id": "C-ENG-004",
+      "category": "工程质量",
+      "description": "标准引用审计",
+      "verdict": "covered",
+      "evidence": "大寒日修正, 85%修正, 千人指标来源修正, 用地分类修正",
+      "action": ""
+    }
+  ]
+}

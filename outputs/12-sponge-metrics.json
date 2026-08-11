@@ -1,0 +1,27 @@
+{
+  "method": "volume_capture (容积法, GB 50014-2021)",
+  "control_rate": 0.85,
+  "design_rainfall_mm": 33.6,
+  "site_area_ha": 1141.2825385554047,
+  "composite_phi": 0.5660652794826138,
+  "required_storage_m3": 217069.5808364133,
+  "storage_density_m3_ha": 190.1979339061582,
+  "lid_plan": {
+    "rain_garden": {
+      "volume_m3": 86827.83233456533,
+      "area_m2": 347311.32933826133
+    },
+    "permeable_pavement": {
+      "volume_m3": 65120.87425092399,
+      "area_m2": 620198.8023897524
+    },
+    "sunken_green": {
+      "volume_m3": 43413.91616728267,
+      "area_m2": 289426.10778188444
+    },
+    "underground_tank": {
+      "volume_m3": 21706.958083641333,
+      "area_m2": null
+    }
+  }
+}
