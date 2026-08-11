@@ -31,9 +31,19 @@ adapter      — haidian-format GeoJSON features -> pipeline check inputs:
                submission geometry/ loader
 integration  — end-to-end technical review of haidian submissions:
                load -> adapt -> TechnicalReviewRunner -> tech_review.json
+ventilation  — ventilation / wind corridor analysis 通风分析: empirical
+               wake model, frontal area density, corridor components;
+               Beijing 通风廊道 guidance (notebook 17)
 renewal      — urban renewal 留-改-拆 classification: rule scoring,
                spatial clustering (block coherence), FAR-capacity
                assessment; 北京市城市更新条例 (2022) (notebook 18)
+traffic      — traffic capacity analysis 交通承载力: road V/C saturation,
+               intersection LOS A-F, network-wide saturation and road
+               density check; GB/T 51328-2018, CJJ 37-2012 (notebook 19)
+vertical     — vertical design / grading 竖向设计: slope & aspect from
+               numpy gradients, cut-fill balance for a platform level,
+               D8 drainage direction / sinks; CJJ 83-2016 slope classes
+               (notebook 21, data-gated — synthetic DEM demo)
 
 Archived experimental GPU benchmarks (not for production use; see
 src/experimental/README.md):

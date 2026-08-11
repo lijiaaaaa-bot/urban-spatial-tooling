@@ -28,6 +28,7 @@ from src.solar import (
     building_shadow_at_height,
     check_per_window_compliance,
     compute_spacing_d,
+    facade_annual_irradiation,
     facade_insolation,
     sun_position,
     window_receives_sun,
@@ -216,3 +217,41 @@ def test_check_per_window_compliance():
     assert [f['building_id'] for f in check.deficient_facades] == [0, 1]
     assert check.deficient_facades[1]['orientation'] == 90.0
     assert 'FAIL' in check.summary
+
+
+# ---------------------------------------------------------------------------
+# Annual facade irradiation (kWh/m²/year, solar-constant direct-beam model)
+# ---------------------------------------------------------------------------
+
+
+def test_facade_annual_irradiation_orientation_order():
+    """Stand-alone rect in Beijing (lat 39.9): the south facade collects by
+    far the most annual direct-beam irradiation (low winter sun, cos(inc)
+    ~0.89 at noon), the north facade the least (sun is almost never north
+    of the E-W line), east/west sit in between and are exactly equal — the
+    intraday sampling grid is symmetric about solar noon."""
+    res = facade_annual_irradiation([(_rect(0, 0, 30, 12), 18.0)])
+    f = res[0]
+    assert set(f) == {0, 90, 180, 270}          # N / E / S / W
+    assert f[0] < f[90] < f[180]
+    assert f[0] < f[270] < f[180]
+    assert f[90] == pytest.approx(f[270], abs=1.0)
+    assert f[180] > 1500.0                       # south: dominant annual sum
+    assert f[0] < 500.0                          # north: winter-shaded
+    # integration converges: day_step=7 agrees with the full daily sweep
+    f_daily = facade_annual_irradiation([(_rect(0, 0, 30, 12), 18.0)],
+                                        day_step=1)[0]
+    assert f_daily[180] == pytest.approx(f[180], rel=0.05)
+
+
+def test_facade_annual_irradiation_equator_symmetry():
+    """At the equator the year is split evenly between the north and south
+    half-spaces, so N ≈ S (both well lit) and E ≈ W; the Beijing north
+    facade stays far below the equator north facade, and the Beijing south
+    facade (low winter sun at 40° N) exceeds the equatorial one."""
+    eq = facade_annual_irradiation([(_rect(0, 0, 30, 12), 18.0)], lat=0.0)
+    bj = facade_annual_irradiation([(_rect(0, 0, 30, 12), 18.0)])
+    assert eq[0][0] == pytest.approx(eq[0][180], abs=10.0)   # N ≈ S
+    assert eq[0][90] == pytest.approx(eq[0][270], abs=1.0)   # E ≈ W
+    assert bj[0][0] < eq[0][0] - 300.0                       # Beijing N ≪ equator N
+    assert bj[0][180] > eq[0][180]                           # Beijing S > equator S

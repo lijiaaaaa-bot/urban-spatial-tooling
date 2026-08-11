@@ -1,0 +1,57 @@
+{
+  "target": "B-04",
+  "verdict": "REVISE",
+  "estimated_population": 25228.6,
+  "planned_population": 25500.0,
+  "findings": [
+    "M1 教育·小学: 缺口 -5,196 m²",
+    "M2 居住用地 17.8 m²/人 低于下限 23.0~38.0 m²/人",
+    "M2 公共服务设施 4.6 m²/人 低于下限 5.0~8.0 m²/人",
+    "M3 北区: over_density (规划/容量 = 1.12)",
+    "M3 东区: under_density (规划/容量 = 0.88)"
+  ],
+  "notes": [
+    "M1 医疗卫生: 富余 +286 m²",
+    "M1 养老设施: 富余 +273 m²",
+    "M1 文化设施: 富余 +173 m²",
+    "M1 体育设施: 富余 +454 m²",
+    "M1 商业服务: 富余 +2,909 m²",
+    "M1 社区服务: 富余 +450 m²"
+  ],
+  "method1_totals": {
+    "total_required": 117817.4,
+    "total_provided": 117300.0,
+    "total_balance": -517.4
+  },
+  "method2_per_capita": {
+    "residential": 17.84,
+    "green": 11.1,
+    "facilities": 4.65
+  },
+  "method3": {
+    "北区": {
+      "capacity": 10714.3,
+      "planned": 12000.0,
+      "ratio": 1.12,
+      "verdict": "over_density"
+    },
+    "东区": {
+      "capacity": 6857.1,
+      "planned": 6000.0,
+      "ratio": 0.875,
+      "verdict": "under_density"
+    },
+    "西区": {
+      "capacity": 5142.9,
+      "planned": 5000.0,
+      "ratio": 0.972,
+      "verdict": "balanced"
+    },
+    "南区": {
+      "capacity": 2514.3,
+      "planned": 2500.0,
+      "ratio": 0.994,
+      "verdict": "balanced"
+    }
+  }
+}

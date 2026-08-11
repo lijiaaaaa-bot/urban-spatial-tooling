@@ -361,6 +361,71 @@ def check_standard_spacing(
     }
 
 
+# Extraterrestrial solar constant in kW/m².  No atmospheric attenuation —
+# an upper-bound beam-irradiation model (see facade_annual_irradiation).
+SOLAR_CONSTANT_KW = 1.361
+
+
+def facade_annual_irradiation(buildings: Sequence[Tuple[np.ndarray, float]],
+                              lat: float = BEIJING_LAT,
+                              day_step: int = 7,
+                              lon: float = BEIJING_LON,
+                              tz: float = BEIJING_TZ,
+                              hour_step: float = 1.0,
+                              ) -> dict:
+    """Annual beam irradiation (kWh/m²) on each cardinal facade of each building.
+
+    For every ``day_step``-th day of the year (day_step=7 → 53 sample days,
+    ~weekly intervals) and every ``hour_step`` hours, evaluates the sun
+    position and accumulates ``max(0, cos(incidence)) * SOLAR_CONSTANT_KW``.
+    For a vertical facade whose outward normal points at azimuth ``az_f`` the
+    incidence cosine is ``cos(altitude) * cos(azimuth - az_f)``; hours with
+    the sun below the horizon or behind the facade contribute nothing.
+    Daily totals are scaled by ``day_step`` so each sampled day stands for
+    the days it represents — the result is the annual integral.  Neighbouring
+    buildings and a building's own shadow are ignored: this is the
+    unobstructed upper-bound irradiation.
+
+    Facade edges are grouped by outward normal rounded to the nearest
+    cardinal direction (0=N, 90=E, 180=S, 270=W).
+
+    Parameters
+    ----------
+    buildings : list of (outline_xy, height)
+        Same format as :func:`facade_insolation` (height is not used).
+    lat, lon, tz : float, optional
+        Location parameters, defaulting to Beijing.
+    day_step : int, optional
+        Sampling interval in days (default 7 → 53 samples/year).
+    hour_step : float, optional
+        Intra-day integration step in hours.
+
+    Returns
+    -------
+    dict
+        ``{bi: {orientation_deg: kWh_per_m2}}`` for each building index
+        ``bi`` in the order of ``buildings``.
+    """
+    results = {}
+    for bi, (outline, _height) in enumerate(buildings):
+        per_orientation = {}
+        for p0, p1 in _facade_edges(outline):
+            az_f = int(90.0 * round(_outward_normal_azimuth(p0, p1) / 90.0)) % 360
+            daily = 0.0
+            for day in range(1, 366, day_step):
+                for hour in np.arange(0.0, 24.0, hour_step):
+                    pos = sun_position(lat, lon, tz, day, hour)
+                    if pos.altitude <= 0:
+                        continue
+                    cos_i = (np.cos(pos.altitude_rad) *
+                             np.cos(np.radians(pos.azimuth - az_f)))
+                    daily += max(0.0, cos_i) * SOLAR_CONSTANT_KW * hour_step
+            per_orientation[az_f] = max(per_orientation.get(az_f, 0.0),
+                                        daily * day_step)
+        results[bi] = per_orientation
+    return results
+
+
 # ---------------------------------------------------------------------------
 # Per-window facade insolation (窗台面日照) — GB 50180-2018 表 4.0.9
 # ---------------------------------------------------------------------------
@@ -761,4 +826,5 @@ __all__ = [
     "FACADE_TOP_MARGIN", "MIN_SUN_ALTITUDE", "MIN_WINDOW_HOURS",
     "building_shadow_at_height", "window_receives_sun",
     "facade_insolation", "CheckResult", "check_per_window_compliance",
+    "SOLAR_CONSTANT_KW", "facade_annual_irradiation",
 ]
